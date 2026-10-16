@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Customer Uploads and Temporary Converted Print Files
+uploads/*
+!uploads/.gitkeep
+converted/*
+!converted/.gitkeep
+agent/temp_print/*
+!agent/temp_print/.gitkeep
+
+# Environment and sensitive data
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS metadata
+.DS_Store
+Thumbs.db

@@ -1,0 +1,20 @@
+{
+  "totalJobs": 15,
+  "totalPrints": 15,
+  "totalPages": 15,
+  "totalRevenue": 56,
+  "bwPages": 15,
+  "colorPages": 0,
+  "dailyStats": {
+    "2026-10-15": {
+      "jobs": 13,
+      "pages": 13,
+      "revenue": 56
+    },
+    "2026-10-16": {
+      "jobs": 2,
+      "pages": 2,
+      "revenue": 0
+    }
+  }
+}

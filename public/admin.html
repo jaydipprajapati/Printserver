@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - FastPrint Express</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">🖨️</div>
+        <div>
+          <h2>Print Admin</h2>
+          <span class="sidebar-subtitle">Kiosk & Queue Hub</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#overview" class="nav-item active" data-tab="overview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Live Queue</span>
+        </a>
+        <a href="#reports" class="nav-item" data-tab="reports">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Monthly Reports</span>
+        </a>
+        <a href="#printers" class="nav-item" data-tab="printers">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <span>Printers & Agent</span>
+        </a>
+        <a href="#pricing" class="nav-item" data-tab="pricing">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <span>Pricing & Settings</span>
+        </a>
+        <a href="#standee" class="nav-item" data-tab="standee">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <span>QR Standee</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/" target="_blank" class="btn-customer-portal">
+          <span>Open Customer App</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </a>
+        <div class="agent-status-card">
+          <div class="agent-indicator" id="agentIndicator"></div>
+          <div>
+            <div class="agent-title">Windows Print Agent</div>
+            <div class="agent-sub" id="agentStatusText">Connecting...</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Top Navigation Bar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle">Live Print Jobs Queue</h1>
+          <div class="server-pill">
+            <span>Mobile Portal:</span>
+            <code id="mobileUrlPill">http://192.168.1.10:4000</code>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <!-- Auto Print Toggle -->
+          <div class="toggle-wrapper" title="When active, print jobs are sent directly to the printer without waiting for admin approval">
+            <span class="toggle-label">Auto-Print</span>
+            <label class="switch">
+              <input type="checkbox" id="autoPrintToggle" checked />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <button id="btnRefreshJobs" class="btn-ghost" title="Refresh">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- KPI Metrics Strip -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-blue">🖨️</div>
+          <div>
+            <span class="kpi-label">Today's Jobs</span>
+            <div class="kpi-val" id="kpiTodayJobs">0</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-green">📄</div>
+          <div>
+            <span class="kpi-label">Pages Printed Today</span>
+            <div class="kpi-val" id="kpiTodayPages">0</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-purple">₹</div>
+          <div>
+            <span class="kpi-label">Today's Revenue</span>
+            <div class="kpi-val" id="kpiTodayRevenue">₹0.00</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-amber">⚙️</div>
+          <div>
+            <span class="kpi-label">Active Printer</span>
+            <div class="kpi-val text-sm" id="kpiActivePrinter">Canon MF3010</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 1: Live Queue Section -->
+      <section id="tab-overview" class="admin-tab-content active">
+        <div class="table-container-card">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <input type="text" id="jobSearchInput" placeholder="Search by Token, Name or File..." class="search-input" />
+            </div>
+            <div class="status-filters">
+              <button class="filter-chip active" data-filter="all">All</button>
+              <button class="filter-chip" data-filter="queued">Queued</button>
+              <button class="filter-chip" data-filter="printing">Printing</button>
+              <button class="filter-chip" data-filter="completed">Completed</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="jobs-table">
+              <thead>
+                <tr>
+                  <th>Token</th>
+                  <th>Customer</th>
+                  <th>Document</th>
+                  <th>Specs</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="jobsTableBody">
+                <tr>
+                  <td colspan="8" class="text-center py-4">Loading print jobs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Printers & Agent -->
+      <section id="tab-printers" class="admin-tab-content">
+        <div class="grid-2col">
+          <div class="card-admin">
+            <h3>Connected Windows Printers</h3>
+            <p class="card-sub">Printers detected on the host machine running the Print Agent.</p>
+            <div id="printersList" class="printers-list">
+              <div class="loading-state">Scanning printers...</div>
+            </div>
+          </div>
+
+          <div class="card-admin">
+            <h3>Hardware Diagnostics & Test Print</h3>
+            <p class="card-sub">Verify physical connection and paper feed to Canon MF3010 or any printer.</p>
+            <div class="form-group">
+              <label class="form-label">Select Test Printer</label>
+              <select id="diagnosticPrinterSelect" class="form-select"></select>
+            </div>
+            <button id="btnTriggerTestPrint" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              <span>Print Hardware Test Page</span>
+            </button>
+            <div id="testPrintFeedback" class="test-feedback hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Pricing & Shop Settings -->
+      <section id="tab-pricing" class="admin-tab-content">
+        <div class="card-admin max-w-lg">
+          <h3>Pricing & Shop Tariff Settings</h3>
+          <p class="card-sub">Changes apply instantly to the mobile customer calculator.</p>
+
+          <form id="settingsForm">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Shop Name</label>
+                <input type="text" id="settingShopName" class="form-input" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Counter Name</label>
+                <input type="text" id="settingCounterName" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">B&W Price / Page (₹)</label>
+                <input type="number" step="0.5" id="settingBwPrice" class="form-input" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Color Price / Page (₹)</label>
+                <input type="number" step="1" id="settingColorPrice" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Duplex Discount (%)</label>
+                <input type="number" id="settingDuplexDiscount" class="form-input" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Data Retention (Minutes)</label>
+                <input type="number" id="settingRetention" class="form-input" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Save Settings</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TAB 4: QR Standee Generator -->
+      <section id="tab-standee" class="admin-tab-content">
+        <div class="grid-2col">
+          <div class="card-admin">
+            <h3>Counter QR Standee</h3>
+            <p class="card-sub">Print this sheet and place it on your counter/desk for customers to scan.</p>
+            <div class="standee-preview-box">
+              <div class="standee-card-inner">
+                <h4 id="standeeShopTitle">FastPrint Express</h4>
+                <div class="standee-tagline">Scan & Print Instantly</div>
+                <div class="standee-qr-frame">
+                  <img id="standeeQrImg" src="" alt="QR Code" />
+                </div>
+                <div class="standee-instructions">
+                  <span>1. Scan QR with Camera</span>
+                  <span>2. Upload Your File</span>
+                  <span>3. Collect Prints from Counter</span>
+                </div>
+              </div>
+            </div>
+            <div class="standee-actions">
+              <a href="/standee" target="_blank" class="btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                <span>Print Standee on A4 Paper</span>
+              </a>
+              <button id="btnDownloadQr" class="btn-outline">Download QR Image</button>
+            </div>
+          </div>
+
+          <div class="card-admin">
+            <h3>QR Configuration</h3>
+            <p class="card-sub">Generate customized QR codes for specific tables or counters.</p>
+            <div class="form-group">
+              <label class="form-label">Target Mobile URL</label>
+              <input type="text" id="customQrUrlInput" class="form-input" />
+            </div>
+            <button id="btnRegenerateQr" class="btn-outline">Update QR Code</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: Monthly & Device Print Reports -->
+      <section id="tab-reports" class="admin-tab-content">
+        <!-- Report Controls Bar -->
+        <div class="report-controls-card">
+          <div class="report-filters">
+            <div class="form-group mb-0">
+              <label class="form-label">Billing Month</label>
+              <select id="reportMonthSelect" class="form-select"></select>
+            </div>
+            <div class="form-group mb-0">
+              <label class="form-label">Filter Device</label>
+              <select id="reportDeviceSelect" class="form-select">
+                <option value="all">All Printers & Devices</option>
+              </select>
+            </div>
+          </div>
+          <div class="report-actions">
+            <button id="btnDownloadReportPdf" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Download PDF Report</span>
+            </button>
+            <button id="btnDownloadReportCsv" class="btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Export CSV</span>
+            </button>
+            <button id="btnPrintReportDirect" class="btn-action primary" title="Print this report directly on counter printer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              <span>Print to Counter</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Monthly KPI Metrics Cards -->
+        <section class="kpi-grid" style="margin-top: 14px;">
+          <div class="kpi-card">
+            <div class="kpi-icon icon-blue">📊</div>
+            <div>
+              <span class="kpi-label">Month Total Jobs</span>
+              <div class="kpi-val" id="repKpiTotalJobs">0</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-green">📄</div>
+            <div>
+              <span class="kpi-label">Month Pages Printed</span>
+              <div class="kpi-val" id="repKpiTotalPages">0</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-purple">₹</div>
+            <div>
+              <span class="kpi-label">Month Revenue</span>
+              <div class="kpi-val" id="repKpiTotalRevenue">₹0.00</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon icon-amber">⚡</div>
+            <div>
+              <span class="kpi-label">Daily Average</span>
+              <div class="kpi-val text-sm" id="repKpiDailyAvg">0 pgs/day</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Format & Device Distribution Strip -->
+        <div class="grid-2col" style="margin-bottom: 16px;">
+          <div class="card-admin" style="margin-bottom:0;">
+            <h3>Document Format Breakdown</h3>
+            <p class="card-sub">PDF, Word, Excel, Photos & Text files printed this month.</p>
+            <div id="formatBreakdownBars" class="breakdown-bars-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <div class="card-admin" style="margin-bottom:0;">
+            <h3>Device / Printer Utilization</h3>
+            <p class="card-sub">Distribution of jobs across connected Windows printers.</p>
+            <div id="deviceBreakdownBars" class="breakdown-bars-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Print Audit Table -->
+        <div class="table-container-card">
+          <div class="table-toolbar">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight:700; color:#fff;">Daily Print Activity Log</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim);">Detailed breakdown of how many prints were produced each day of the month.</p>
+            </div>
+            <div class="badge-counter" id="repActiveDaysBadge">0 Active Days</div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="jobs-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Day</th>
+                  <th>Total Jobs</th>
+                  <th>Pages Printed</th>
+                  <th>B&W / Color</th>
+                  <th>Document Formats</th>
+                  <th>Primary Device</th>
+                  <th>Daily Revenue</th>
+                </tr>
+              </thead>
+              <tbody id="dailyReportTableBody">
+                <tr>
+                  <td colspan="8" class="text-center py-4">Loading daily report...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

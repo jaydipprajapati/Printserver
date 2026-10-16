@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FastPrint Express - Self-Service Printing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- PDF.js for crisp in-browser PDF preview -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <div class="app-container">
+    <!-- Header (No Dashboard link - Customer only) -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+        </div>
+        <div class="brand-text-wrap">
+          <h1 id="shopTitle">FastPrint Express</h1>
+          <div class="brand-sub">
+            <span class="badge-counter" id="counterBadge">Counter 01</span>
+            <span class="status-indicator online" id="serverStatusBadge">
+              <span class="status-dot"></span> <span id="serverStatusText">Printer Ready</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Dashboard removed completely for customer security -->
+        <button id="themeToggle" class="btn-ghost" title="Toggle Theme" aria-label="Toggle Theme">
+          <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Flow -->
+    <main class="main-content">
+      <!-- Welcome Hero Banner & Advertisement -->
+      <section class="welcome-hero-banner" id="welcomeBanner">
+        <div class="ad-tag">⚡ Self-Service Print Kiosk</div>
+        <h2>Welcome to FastPrint Express</h2>
+        <p>Scan, upload, and print directly on our counter laser printer. Fast, private, and automated—no apps needed.</p>
+      </section>
+
+      <!-- Upload & Print Your Document -->
+      <section id="uploadSection" class="section-card upload-card">
+        <div class="section-badge">Fast Print</div>
+        <h2>Print Your Documents & Photos</h2>
+        <p class="section-desc">Upload PDF, Word (.docx), Excel (.xlsx), Photos (JPG, PNG), or Text file to print</p>
+
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.txt" />
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" />
+
+          <div class="dropzone-content">
+            <div class="dropzone-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="dropzone-text">
+              <span class="dropzone-title">Tap to upload your document</span>
+              <span class="dropzone-sub">Supports PDF, Word, Excel & Photos up to 50MB</span>
+            </div>
+
+            <!-- Mobile Quick Action Buttons -->
+            <div class="mobile-upload-actions">
+              <button type="button" id="btnTriggerBrowse" class="btn-upload-choice primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Browse Files</span>
+              </button>
+              <button type="button" id="btnTriggerCamera" class="btn-upload-choice">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <span>Scan / Camera</span>
+              </button>
+            </div>
+
+            <div class="format-badges">
+              <span class="fmt-chip">PDF</span>
+              <span class="fmt-chip">DOCX</span>
+              <span class="fmt-chip">XLSX</span>
+              <span class="fmt-chip">JPG / PNG</span>
+            </div>
+          </div>
+
+          <!-- Progress overlay -->
+          <div id="uploadProgressOverlay" class="upload-progress-overlay hidden">
+            <div class="spinner"></div>
+            <div class="progress-title" id="progressStatusText">Uploading & converting document...</div>
+            <div class="progress-bar-container">
+              <div id="uploadProgressBar" class="progress-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Configure & Preview Section (Shown after uploading a document) -->
+      <section id="configSection" class="section-card config-card hidden">
+        <div class="section-badge">Configure Print</div>
+        <h2>Print Settings & Preview</h2>
+
+        <!-- File Header Card -->
+        <div class="file-summary-card">
+          <div class="file-icon-box" id="fileIconBox">PDF</div>
+          <div class="file-meta">
+            <h3 id="displayFileName">Document.pdf</h3>
+            <div class="file-meta-sub">
+              <span id="displayFileSize">0 KB</span> •
+              <span class="page-count-tag" id="displayPageCount">1 Page</span>
+            </div>
+          </div>
+          <button id="btnChangeFile" class="btn-sm btn-outline">Change</button>
+        </div>
+
+        <div class="config-grid">
+          <!-- Left Column: Settings Form (All print features provided) -->
+          <div class="settings-form">
+            <!-- Color Mode -->
+            <div class="form-group">
+              <label class="form-label">Color Mode</label>
+              <div class="option-toggle-group">
+                <label class="option-card active">
+                  <input type="radio" name="colorMode" value="bw" checked />
+                  <div class="option-content">
+                    <span class="option-title">Black & White</span>
+                    <span class="option-hint" id="bwRateHint">₹2.00 / page</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="colorMode" value="color" />
+                  <div class="option-content">
+                    <span class="option-title">Full Color</span>
+                    <span class="option-hint" id="colorRateHint">₹10.00 / page</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Paper Size & Orientation -->
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Paper Size</label>
+                <select id="paperSizeSelect" class="form-select">
+                  <option value="A4" selected>A4 (Standard)</option>
+                  <option value="A3">A3 (Large)</option>
+                  <option value="Letter">Letter</option>
+                  <option value="Legal">Legal</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Orientation</label>
+                <select id="orientationSelect" class="form-select">
+                  <option value="portrait" selected>Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Copies Stepper -->
+            <div class="form-group">
+              <label class="form-label">Number of Copies</label>
+              <div class="stepper-wrapper">
+                <button type="button" id="btnMinusCopy" class="btn-stepper" aria-label="Decrease copies">−</button>
+                <input type="number" id="copiesInput" value="1" min="1" max="100" class="stepper-input" inputmode="numeric" />
+                <button type="button" id="btnPlusCopy" class="btn-stepper" aria-label="Increase copies">+</button>
+                <div class="quick-chips">
+                  <button type="button" class="chip-copy" data-copies="1">1</button>
+                  <button type="button" class="chip-copy" data-copies="2">2</button>
+                  <button type="button" class="chip-copy" data-copies="5">5</button>
+                  <button type="button" class="chip-copy" data-copies="10">10</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Page Range -->
+            <div class="form-group">
+              <label class="form-label">Pages to Print</label>
+              <div class="range-radio-group">
+                <label class="radio-inline">
+                  <input type="radio" name="rangeType" value="all" checked /> All Pages (<span id="rangeAllCount">1</span>)
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" name="rangeType" value="custom" /> Custom Range
+                </label>
+              </div>
+              <div id="customRangeBox" class="custom-range-input-wrapper hidden">
+                <input type="text" id="customRangeInput" placeholder="e.g. 1-3, 5" class="form-input" />
+                <span class="range-helper">Enter page numbers or ranges separated by commas</span>
+              </div>
+            </div>
+
+            <!-- Duplex / Sides -->
+            <div class="form-group">
+              <label class="form-label">Sides</label>
+              <div class="option-toggle-group">
+                <label class="option-card active">
+                  <input type="radio" name="duplexMode" value="simplex" checked />
+                  <div class="option-content">
+                    <span class="option-title">Single Sided</span>
+                    <span class="option-hint">1 side / page</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="duplexMode" value="duplex" />
+                  <div class="option-content">
+                    <span class="option-title">Double Sided</span>
+                    <span class="option-hint" id="duplexDiscountHint">Save 10%</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Optional Customer Info -->
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Your Name <span class="optional">(Optional)</span></label>
+                <input type="text" id="customerNameInput" placeholder="e.g. Rahul Sharma" class="form-input" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Mobile No. <span class="optional">(Optional)</span></label>
+                <input type="tel" id="customerPhoneInput" placeholder="e.g. 9876543210" class="form-input" inputmode="tel" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive Preview Canvas -->
+          <div class="preview-panel" id="previewPanel">
+            <div class="preview-header">
+              <div class="preview-title-wrap">
+                <span class="preview-title">Document Preview</span>
+                <span class="preview-spec-badge" id="previewSpecBadge">A4 • Portrait</span>
+                <button type="button" id="btnTogglePreview" class="btn-toggle-preview" aria-expanded="true">
+                  <span id="togglePreviewText">Collapse</span>
+                  <svg id="togglePreviewIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+              </div>
+              <div class="preview-pager" id="previewPager">
+                <button id="prevPageBtn" class="btn-pager" disabled aria-label="Previous Page">&lt;</button>
+                <span id="pageIndicator">Page 1 / 1</span>
+                <button id="nextPageBtn" class="btn-pager" disabled aria-label="Next Page">&gt;</button>
+              </div>
+            </div>
+            <div class="preview-viewport" id="previewViewport">
+              <div id="previewSpinner" class="preview-spinner hidden">
+                <div class="spinner"></div>
+                <span>Rendering preview...</span>
+              </div>
+              <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
+              <img id="imgPreview" class="img-preview hidden" alt="Image preview" />
+              <div class="preview-sheet-tag" id="previewSheetTag">A4 (210 × 297 mm) • Portrait</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Bar & Confirm Button -->
+        <div class="price-bar" id="priceBar">
+          <div class="price-info">
+            <span class="price-label">Estimated Total</span>
+            <div class="price-amount" id="totalPriceDisplay">₹2.00</div>
+            <span class="price-breakdown" id="priceBreakdownText">1 copy × 1 page @ ₹2.00/page</span>
+          </div>
+          <button id="btnConfirmPrint" class="btn-primary btn-print">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span>Confirm & Print</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Live Real-time Status Modal/Card (Shown after submitting) -->
+      <section id="statusSection" class="section-card status-card hidden">
+        <div class="status-header">
+          <div class="status-icon-animated" id="statusPulseIcon">🖨️</div>
+          <h2>Print Job Submitted!</h2>
+          <p class="status-subtitle">Your document is being printed by the local print server.</p>
+        </div>
+
+        <!-- Token Card -->
+        <div class="token-box">
+          <span class="token-label">PICKUP TOKEN</span>
+          <div class="token-value" id="pickupTokenValue">#PR-0000</div>
+          <span class="token-hint">Show this code at the counter to collect your prints</span>
+        </div>
+
+        <!-- Animated Progress Steps -->
+        <div class="stepper-timeline">
+          <div class="timeline-step completed" id="stepUpload">
+            <div class="step-circle">✓</div>
+            <div class="step-label">Upload</div>
+          </div>
+          <div class="timeline-line active" id="line1"></div>
+          <div class="timeline-step active" id="stepProcess">
+            <div class="step-circle">2</div>
+            <div class="step-label">Ready</div>
+          </div>
+          <div class="timeline-line" id="line2"></div>
+          <div class="timeline-step" id="stepSpool">
+            <div class="step-circle">3</div>
+            <div class="step-label">Spool</div>
+          </div>
+          <div class="timeline-line" id="line3"></div>
+          <div class="timeline-step" id="stepPrint">
+            <div class="step-circle">4</div>
+            <div class="step-label">Print</div>
+          </div>
+          <div class="timeline-line" id="line4"></div>
+          <div class="timeline-step" id="stepDone">
+            <div class="step-circle">5</div>
+            <div class="step-label">Done</div>
+          </div>
+        </div>
+
+        <!-- Live Status Ticker -->
+        <div class="status-ticker">
+          <div class="ticker-badge">Status</div>
+          <div class="ticker-msg" id="liveStatusTickerText">Document sent to Windows Print Agent...</div>
+        </div>
+
+        <!-- Order details summary -->
+        <div class="order-summary-table">
+          <div class="summary-row">
+            <span>Target Printer:</span>
+            <strong id="statusPrinterName">Canon MF3010</strong>
+          </div>
+          <div class="summary-row">
+            <span>Document:</span>
+            <strong id="statusDocName">file.pdf</strong>
+          </div>
+          <div class="summary-row">
+            <span>Copies & Pages:</span>
+            <strong id="statusCopiesPages">1 copy • 1 page</strong>
+          </div>
+          <div class="summary-row">
+            <span>Total Amount:</span>
+            <strong id="statusTotalAmount" class="highlight-cost">₹2.00</strong>
+          </div>
+        </div>
+
+        <div class="status-actions">
+          <button id="btnPrintAnother" class="btn-primary btn-full">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Print Another Document</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Automated QR Printing Service • Secured with Local Windows Print Agent</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

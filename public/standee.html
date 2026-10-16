@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Counter QR Standee - Printable A4 Poster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 12px;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    .top-actions {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 210mm;
+    }
+    .btn-print-action {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-back-action {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* A4 Standee Sheet */
+    .standee-sheet {
+      width: 100%;
+      max-width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      padding: 16mm 18mm;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      border: 3px solid #0f172a;
+    }
+
+    .standee-header {
+      text-align: center;
+      border-bottom: 3px solid #0f172a;
+      padding-bottom: 14px;
+    }
+    .shop-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(20pt, 5vw, 36pt);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: #0f172a;
+      word-break: break-word;
+    }
+    .counter-pill {
+      display: inline-block;
+      margin-top: 8px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: clamp(10pt, 2.5vw, 13pt);
+      font-weight: 800;
+      padding: 5px 18px;
+      border-radius: 30px;
+      letter-spacing: 0.05em;
+    }
+
+    .main-hero {
+      text-align: center;
+      margin: 16px 0;
+    }
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(16pt, 4vw, 24pt);
+      font-weight: 800;
+      color: #4f46e5;
+      margin-bottom: 6px;
+    }
+    .hero-sub {
+      font-size: clamp(10pt, 2.5vw, 12pt);
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .qr-frame {
+      display: flex;
+      justify-content: center;
+      margin: 14px 0;
+    }
+    .qr-box {
+      border: 3px solid #0f172a;
+      padding: 12px;
+      border-radius: 14px;
+      background: #fff;
+    }
+    .qr-box img {
+      width: clamp(180px, 45vw, 260px);
+      height: clamp(180px, 45vw, 260px);
+      display: block;
+    }
+
+    .url-display {
+      font-size: clamp(8.5pt, 2vw, 10.5pt);
+      color: #64748b;
+      margin-top: 6px;
+      font-family: monospace;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 2px dashed #cbd5e1;
+    }
+    .step-card {
+      text-align: center;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 8px;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #4f46e5;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13pt;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+    .step-title {
+      font-size: 11pt;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step-desc {
+      font-size: 8.5pt;
+      color: #64748b;
+      line-height: 1.3;
+    }
+
+    .supported-badges {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .fmt-tag {
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    .standee-footer {
+      text-align: center;
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8.5pt;
+      color: #94a3b8;
+    }
+
+    /* Mobile Screen Adjustments */
+    @media (max-width: 600px) {
+      .standee-sheet {
+        padding: 16px 12px;
+        min-height: auto;
+      }
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .step-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        padding: 10px 12px;
+      }
+      .step-num {
+        margin: 0;
+        flex-shrink: 0;
+      }
+    }
+
+    /* Print Specific Formatting */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .top-actions {
+        display: none !important;
+      }
+      .standee-sheet {
+        width: 100%;
+        min-height: 100vh;
+        border: none;
+        box-shadow: none;
+        padding: 10mm 15mm;
+        border-radius: 0;
+      }
+      .steps-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+      .step-card {
+        display: block !important;
+        text-align: center !important;
+      }
+      .step-num {
+        margin: 0 auto 8px !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-actions">
+    <button class="btn-print-action" onclick="window.print()">🖨️ Print Standee on A4 Paper</button>
+    <a href="/admin" class="btn-back-action">Back to Admin</a>
+  </div>
+
+  <div class="standee-sheet">
+    <div class="standee-header">
+      <h1 class="shop-title" id="shopNameHeading">FASTPRINT EXPRESS</h1>
+      <div class="counter-pill" id="counterNameHeading">COUNTER 01</div>
+    </div>
+
+    <div class="main-hero">
+      <div class="hero-title">📱 SCAN TO PRINT DIRECTLY</div>
+      <div class="hero-sub">No cables • No app needed • Direct from phone</div>
+
+      <div class="qr-frame">
+        <div class="qr-box">
+          <img id="qrPosterImg" src="" alt="Scan QR Code to Print" />
+        </div>
+      </div>
+      <div class="url-display" id="urlPosterDisplay">http://localhost:4000</div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Scan QR Code</div>
+          <div class="step-desc">Open your camera or QR scanner to open the print portal.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Upload File</div>
+          <div class="step-desc">Choose PDF, Word, Excel, Photos or Documents to print.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Confirm & Collect</div>
+          <div class="step-desc">Choose B&W or Color, tap Confirm and take your printed sheets!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="supported-badges">
+      <span class="fmt-tag">PDF</span>
+      <span class="fmt-tag">WORD (.DOCX)</span>
+      <span class="fmt-tag">EXCEL (.XLSX)</span>
+      <span class="fmt-tag">PHOTOS (JPG, PNG)</span>
+    </div>
+
+    <div class="standee-footer">
+      Powered by QR Code Online Printing Service • Automated Local USB/Wi-Fi Print Agent
+    </div>
+  </div>
+
+  <script>
+    async function loadStandee() {
+      try {
+        const res = await fetch('/api/admin/qr?width=600');
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('qrPosterImg').src = data.qrImage;
+          document.getElementById('urlPosterDisplay').textContent = data.url;
+          if (data.shopInfo) {
+            document.getElementById('shopNameHeading').textContent = data.shopInfo.shopName.toUpperCase();
+            document.getElementById('counterNameHeading').textContent = data.shopInfo.counterName.toUpperCase();
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load QR Standee:', err);
+      }
+    }
+    loadStandee();
+  </script>
+</body>
+</html>

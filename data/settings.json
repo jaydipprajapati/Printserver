@@ -1,0 +1,20 @@
+{
+  "shopName": "FastPrint Express",
+  "counterName": "Counter 01",
+  "tagline": "Scan, Upload & Print in Seconds",
+  "currency": "₹",
+  "autoPrint": false,
+  "defaultPrinter": "Canon MF3010",
+  "pricing": {
+    "bwPerPage": 5,
+    "colorPerPage": 10,
+    "paperMultipliers": {
+      "A4": 1,
+      "A3": 2,
+      "Letter": 1,
+      "Legal": 1.25
+    },
+    "duplexDiscountPercent": 10
+  },
+  "retentionMinutes": 120
+}
