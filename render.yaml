@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: printserver
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/admin/settings
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AGENT_AUTH_TOKEN
+        value: PRINT_AGENT_SECRET_SECURE_2026

@@ -6,8 +6,26 @@ const path = require('path');
 const os = require('os');
 const printerService = require('./printerService');
 
+require('dotenv').config();
+
+function normalizeWsUrl(inputUrl) {
+  let url = (inputUrl || 'ws://127.0.0.1:4000/ws').trim();
+  url = url.replace(/\/+$/, '');
+  if (url.startsWith('https://')) {
+    url = 'wss://' + url.slice(8);
+  } else if (url.startsWith('http://')) {
+    url = 'ws://' + url.slice(7);
+  } else if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+    url = 'wss://' + url;
+  }
+  if (!url.endsWith('/ws')) {
+    url = url + '/ws';
+  }
+  return url;
+}
+
 // Agent configuration
-const SERVER_URL = process.env.SERVER_URL || 'ws://127.0.0.1:4000/ws';
+const SERVER_URL = normalizeWsUrl(process.env.SERVER_URL || 'ws://127.0.0.1:4000/ws');
 const AUTH_TOKEN = process.env.AGENT_AUTH_TOKEN || 'PRINT_AGENT_SECRET_SECURE_2026';
 const AGENT_ID = process.env.AGENT_ID || `win-pc-${os.hostname().toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
 

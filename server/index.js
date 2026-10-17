@@ -114,7 +114,7 @@ function dispatchPrintJob(jobId, overridePrinter = null) {
     type: 'PRINT_JOB',
     jobId: job.id,
     token: job.pickupToken,
-    fileUrl: `http://127.0.0.1:${config.PORT}/api/download-job/${job.id}`,
+    fileUrl: `${config.BASE_URL}/api/download-job/${job.id}`,
     localFilePath: job.filePath,
     printer: printerName,
     options: {
