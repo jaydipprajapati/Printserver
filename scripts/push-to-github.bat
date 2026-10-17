@@ -15,17 +15,25 @@ if %ERRORLEVEL% neq 0 (
   exit /b 1
 )
 
-set /p REPO_URL="Enter your GitHub Repository URL (e.g. https://github.com/username/repo.git): "
-if "%REPO_URL%"=="" (
-  echo [ERROR] Repository URL cannot be empty.
-  pause
-  exit /b 1
+for /f "tokens=*" %%a in ('git config --get remote.origin.url 2^>nul') do set "EXISTING_URL=%%a"
+
+if not "%EXISTING_URL%"=="" (
+  echo Using configured repository:
+  echo   %EXISTING_URL%
+  echo.
+  set "REPO_URL=%EXISTING_URL%"
+) else (
+  set /p REPO_URL="Enter your GitHub Repository URL (e.g. https://github.com/username/repo.git): "
+  if "%REPO_URL%"=="" (
+    echo [ERROR] Repository URL cannot be empty.
+    pause
+    exit /b 1
+  )
+  echo Adding remote origin...
+  git remote remove origin 2>nul
+  git remote add origin %REPO_URL%
 )
 
-echo.
-echo Adding remote origin...
-git remote remove origin 2>nul
-git remote add origin %REPO_URL%
 git branch -M main
 
 echo.
