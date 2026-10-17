@@ -11,3 +11,5 @@ services:
         value: production
       - key: AGENT_AUTH_TOKEN
         value: PRINT_AGENT_SECRET_SECURE_2026
+      - key: BASE_URL
+        value: https://printserver-u4lv.onrender.com
