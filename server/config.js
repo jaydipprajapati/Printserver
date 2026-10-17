@@ -24,7 +24,7 @@ module.exports = {
   PORT: port,
   HOST: '0.0.0.0',
   LOCAL_IP: localIp,
-  BASE_URL: process.env.BASE_URL || `http://${localIp}:${port}`,
+  BASE_URL: process.env.BASE_URL || process.env.RENDER_EXTERNAL_URL || `http://${localIp}:${port}`,
   AGENT_AUTH_TOKEN: process.env.AGENT_AUTH_TOKEN || 'PRINT_AGENT_SECRET_SECURE_2026',
 
   // Directory paths
