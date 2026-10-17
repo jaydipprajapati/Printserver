@@ -456,7 +456,16 @@ function handleFileUpload(file) {
         uploadProgressOverlay.classList.add('hidden');
       }
     } else {
-      alert(`Upload failed: ${xhr.statusText}`);
+      let errorMsg = `Upload failed (${xhr.status})`;
+      try {
+        const errJson = JSON.parse(xhr.responseText);
+        if (errJson && errJson.error) {
+          errorMsg = errJson.error;
+        }
+      } catch (_) {
+        if (xhr.statusText) errorMsg += `: ${xhr.statusText}`;
+      }
+      alert(errorMsg);
       uploadProgressOverlay.classList.add('hidden');
     }
   };

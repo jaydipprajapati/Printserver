@@ -279,6 +279,9 @@ class ConverterService {
     }
 
     if (['.docx', '.doc', '.xlsx', '.xls'].includes(ext)) {
+      if (process.platform !== 'win32') {
+        throw new Error('Word (.docx) and Excel (.xlsx) files must be saved as PDF before uploading to the cloud kiosk. Please save your file as PDF and upload the PDF!');
+      }
       try {
         await this.officeDocToPdf(filePath, outputPath);
         const info = await this.getPdfInfo(outputPath);
